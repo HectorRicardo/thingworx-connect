@@ -1,0 +1,38 @@
+import JsonResponsePromise from './JsonResponsePromise';
+import ThingworxResponse from '../responses/ThingworxResponse';
+
+/**
+ * Wrapper for a promise that represents the result of a service execution request.
+ */
+export default class ServiceExecutionPromise extends JsonResponsePromise {
+  /**
+   * Converts the response's json body to an infotable.
+   *
+   * @returns {Promise} a promise resolving to the infotable of the response body.
+   * @throws {Error} if the request was not successful or if the response is not an infotable.
+   */
+  async infoTable() {
+    const infoTable = await this.json();
+    if (!JsonResponsePromise.isInfoTable(infoTable)) {
+      throw new Error(`The request ${this.request.toString()} did not return an infotable. It returned ${JsonResponsePromise.prettifyInfoTable(infoTable)}.`);
+    }
+    return JsonResponsePromise.parseInfoTable(infoTable);
+  }
+
+  /**
+   * Checks that the response is ok and defines undefined as the default value when applying the
+   * .then() callback on this instance. This is used only for services that don't have any return
+   * value. For example:
+   *
+   * await Resources['EntityServices'].CreateThing({ ... });
+   *
+   * @returns {Promise} a promise that resolves to undefined.
+   */
+  async defaultValue() {
+    const response = new ThingworxResponse(await this.promise, this.request);
+    if (!response.ok) {
+      throw await this.buildError(response);
+    }
+    return undefined;
+  }
+}

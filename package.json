@@ -1,0 +1,38 @@
+{
+  "name": "thingworx-connect",
+  "version": "1.0.2",
+  "description": "A library used to make REST API calls to Thingworx from browser-side JavaScript in a Thingworx-ish way.",
+  "main": "dist/thingworx-connect.cjs.js",
+  "module": "dist/thingworx-connect.esm.js",
+  "browser": "dist/thingworx-connect.umd.js",
+  "files": ["dist"],
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "keywords": ["thingworx", "connect", "thingworx-connect"],
+  "homepage": "https://github.com/HectorRicardo/thingworx-connect",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HectorRicardo/thingworx-connect"
+  },
+  "author": "Hector Mendez",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jsdoc": "^20.0.5",
+    "husky": "^4.0.1",
+    "lint-staged": "^9.5.0",
+    "rollup": "^1.29.0",
+    "rollup-plugin-terser": "^5.1.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint"
+  }
+}
