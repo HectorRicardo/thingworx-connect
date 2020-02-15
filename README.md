@@ -135,15 +135,3 @@ async function changePasswordOnRuntime() {
   await Things['MyThing'].MyService();  // success!
 }
 ```
-
-You can also check the validity of your credentials before doing any requests whatsoever.
-
- ```javascript
-async function sample() {
-  const { ThingTemplates } = await Thingworx.connect('https://localhost'); // Notice the 'await' keyword here
-  const result = await ThingTemplates['GenericThing'].GetImplementingThings().infoTable();
-}
-```
-Like with the `.collections()` method, your browser will ask for username and password when using the `.connect()` method with arguments. The difference is, however, that the credentials will be asked before doing any requests.
-
-You can also send the app key or username and password as with the `.collections()` method. If any of those parameters are wrong, an error will be thrown.
