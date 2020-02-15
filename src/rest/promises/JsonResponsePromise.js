@@ -79,17 +79,6 @@ export default class JsonResponsePromise {
     return response.json();
   }
 
-  /**
-   * Builds an error associated to this response.
-   * Only call this method if the response's ok status was false.
-   *
-   * @param {ThingworxResponse} response - the response this promise resolved to.
-   * @returns {Error} - an Error object that is ready to be thrown.
-   */
-  async buildError(response) {
-    return new Error(`Error requesting ${this.request.toString()}\nFrom ${response.serverURL}\n${await response.text()}`);
-  }
-
   /* This method is to make this class a Thenable.
      The presence of this method allows this class to be used in conjunction with the await keyword
      without having to use the .json(), .val(), or .infoTable() methods.
