@@ -1,15 +1,21 @@
 {
   "name": "thingworx-connect",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A library used to make REST API calls to Thingworx from browser-side JavaScript in a Thingworx-ish way.",
   "main": "dist/thingworx-connect.cjs.js",
   "module": "dist/thingworx-connect.esm.js",
   "browser": "dist/thingworx-connect.umd.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rollup -c"
   },
-  "keywords": ["thingworx", "connect", "thingworx-connect"],
+  "keywords": [
+    "thingworx",
+    "connect",
+    "thingworx-connect"
+  ],
   "homepage": "https://github.com/HectorRicardo/thingworx-connect",
   "repository": {
     "type": "git",
