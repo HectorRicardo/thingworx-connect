@@ -1,7 +1,6 @@
 import Server from './Server';
 import ProxyCreator from './ProxyCreator';
 import OptionsModifier from './OptionsModifier';
-import Ping from '../rest/requests/Ping';
 
 /**
  * Class used to create a connection to a particular Thingworx server.
@@ -44,16 +43,6 @@ export default class Connection {
     }
     this.modifyOptions(request.options);
     return fetch(request.url, request.options);
-  }
-
-  /**
-   * Pings the server and asynchronously waits for a response.
-   *
-   * @returns {Promise} a promise that resolves to an instance of PingResponse.
-   */
-  async ping() {
-    const request = new Ping(this.server);
-    return request.send(this);
   }
 
   /**

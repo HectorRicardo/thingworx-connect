@@ -1,3 +1,5 @@
+import Entity from './Entity';
+
 /**
  * Class representing an entity collection.
  */
@@ -6,12 +8,10 @@ export default class EntityCollection {
    * Creates an entity collection.
    *
    * @param {string} name - the name of the collection.
-   * @param {Function} collectionClass - the class of a single entity of the collection.
    * @param {Server} server - the server to which this collection belongs.
    */
-  constructor(name, collectionClass, server) {
+  constructor(name, server) {
     this.name = name;
-    this.CollectionClass = collectionClass;
     this.server = server;
     this.entities = new Map();
   }
@@ -25,7 +25,7 @@ export default class EntityCollection {
    */
   getEntity(name) {
     if (!this.entities.has(name)) {
-      this.entities.set(name, new this.CollectionClass(name, this));
+      this.entities.set(name, new Entity(name, this));
     }
     return this.entities.get(name);
   }

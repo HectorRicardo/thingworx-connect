@@ -24,8 +24,6 @@ module.exports = {
         'Server',
         'Connection',
         'ProxyCreator',
-        'Dashboards', 'DataShapes', 'DataTags', 'Groups', 'Logs', 'Mashups', 'Menus', 'ModelTags', 'Networks', 'Resources', 'Things', 'ThingShpes', 'ThingTemplates', 'Users',
-        'Dashboard', 'DataShape', 'DataTag', 'Group', 'Log', 'Mashup', 'Menu', 'ModelTag', 'Network', 'Resource', 'Thing', 'ThingShpe', 'ThingTemplate', 'User',
         'EntityCollection',
         'Entity',
         'Property',

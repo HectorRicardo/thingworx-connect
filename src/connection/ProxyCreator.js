@@ -39,117 +39,21 @@ export default class ProxyCreator {
   /**
    * Creates proxies of all entity collections for a connection instance.
    *
-   * @param {Connection} conn - The connection instance for which to build the proxies.
+   * @param {Connection} connection - The connectionection instance for which to build the proxies.
    * @returns {object} a frozen object containing all proxies.
    */
-  static createEntityCollectionProxies(conn) {
-    const { server } = conn;
-
-    let logs = null;
-    let users = null;
-    let dashboards = null;
-    let groups = null;
-    let mashups = null;
-    let menus = null;
-    let modelTags = null;
-    let networks = null;
-    let dataTags = null;
-    let dataShapes = null;
-    let thingShapes = null;
-    let thingTemplates = null;
-    let things = null;
-    let resources = null;
-
-    return Object.freeze({
-      get Logs() {
-        if (logs === null) {
-          logs = ProxyCreator.createCollectionProxy(server.logs, conn);
+  static createEntityCollectionProxies(connection) {
+    const changeAuthParams = connection.setAuthParams.bind(connection);
+    const proxyHandler = {
+      get(server, property) {
+        if (property === 'changeAuthParams') {
+          return changeAuthParams;
         }
-        return logs;
+        const collection = server.getEntityCollection(property);
+        return ProxyCreator.createCollectionProxy(collection, connection);
       },
-      get Users() {
-        if (users === null) {
-          users = ProxyCreator.createCollectionProxy(server.users, conn);
-        }
-        return users;
-      },
-      get Dashboards() {
-        if (dashboards === null) {
-          dashboards = ProxyCreator.createCollectionProxy(server.dashboards, conn);
-        }
-        return dashboards;
-      },
-      get Groups() {
-        if (groups === null) {
-          groups = ProxyCreator.createCollectionProxy(server.groups, conn);
-        }
-        return groups;
-      },
-      get Mashups() {
-        if (mashups === null) {
-          mashups = ProxyCreator.createCollectionProxy(server.mashups, conn);
-        }
-        return mashups;
-      },
-      get Menus() {
-        if (menus === null) {
-          menus = ProxyCreator.createCollectionProxy(server.menus, conn);
-        }
-        return menus;
-      },
-      get ModelTags() {
-        if (modelTags === null) {
-          modelTags = ProxyCreator.createCollectionProxy(server.modelTags, conn);
-        }
-        return modelTags;
-      },
-      get Networks() {
-        if (networks === null) {
-          networks = ProxyCreator.createCollectionProxy(server.networks, conn);
-        }
-        return networks;
-      },
-      get DataTags() {
-        if (dataTags === null) {
-          dataTags = ProxyCreator.createCollectionProxy(server.dataTags, conn);
-        }
-        return dataTags;
-      },
-      get DataShapes() {
-        if (dataShapes === null) {
-          dataShapes = ProxyCreator.createCollectionProxy(server.dataShapes, conn);
-        }
-        return dataShapes;
-      },
-      get ThingShapes() {
-        if (thingShapes === null) {
-          thingShapes = ProxyCreator.createCollectionProxy(server.thingShapes, conn);
-        }
-        return thingShapes;
-      },
-      get ThingTemplates() {
-        if (thingTemplates === null) {
-          thingTemplates = ProxyCreator.createCollectionProxy(server.thingTemplates, conn);
-        }
-        return thingTemplates;
-      },
-      get Things() {
-        if (things === null) {
-          things = ProxyCreator.createCollectionProxy(server.things, conn);
-        }
-        return things;
-      },
-      get Resources() {
-        if (resources === null) {
-          resources = ProxyCreator.createCollectionProxy(server.resources, conn);
-        }
-        return resources;
-      },
-      // For changing the authentication params.
-      changeAuthMethod(authParams) {
-        conn.setAuthParams(authParams);
-      },
-    });
+    };
+    return Object.freeze(new Proxy(connection.server, proxyHandler));
   }
 
   /**
