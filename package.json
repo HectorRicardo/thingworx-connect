@@ -1,6 +1,6 @@
 {
   "name": "thingworx-connect",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A library used to make REST API calls to Thingworx from browser-side JavaScript in a Thingworx-ish way.",
   "main": "dist/thingworx-connect.cjs.js",
   "module": "dist/thingworx-connect.esm.js",
