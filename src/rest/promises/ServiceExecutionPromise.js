@@ -14,9 +14,42 @@ export default class ServiceExecutionPromise extends JsonResponsePromise {
   async infoTable() {
     const infoTable = await this.json();
     if (!JsonResponsePromise.isInfoTable(infoTable)) {
-      throw new Error(`The request ${this.request.toString()} did not return an infotable. It returned ${JsonResponsePromise.prettifyInfoTable(infoTable)}.`);
+      throw new Error(`The request ${this.request.toString()} did not return an infotable. It returned ${JsonResponsePromise.prettify(infoTable)}.`);
     }
     return JsonResponsePromise.parseInfoTable(infoTable);
+  }
+
+  /**
+   * Converts the response's json body to an infotable.
+   * An alias for .infoTable()
+   *
+   * @returns {Promise} a promise resolving to the infotable of the response body.
+   * @throws {Error} if the request was not successful or if the response is not an infotable.
+   */
+  async it() {
+    return this.infoTable();
+  }
+
+  /**
+   * Converts the response's json body to an infotable.
+   * An alias for .infoTable()
+   *
+   * @returns {Promise} a promise resolving to the infotable of the response body.
+   * @throws {Error} if the request was not successful or if the response is not an infotable.
+   */
+  async infotable() {
+    return this.infoTable();
+  }
+
+  /**
+   * Converts the response's json body to an infotable and returns its rows.
+   *
+   * @returns {Promise} a promise resolving to the rows of the infotable of the response body.
+   * @throws {Error} if the request was not successful or if the response is not an infotable.
+   */
+  async rows() {
+    const infoTable = await this.infoTable();
+    return infoTable.rows;
   }
 
   /**

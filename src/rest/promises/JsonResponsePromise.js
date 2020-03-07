@@ -51,12 +51,12 @@ export default class JsonResponsePromise {
   async val() {
     const infoTable = await this.json();
     if (!JsonResponsePromise.isInfoTable(infoTable) || infoTable.rows.length !== 1) {
-      throw new Error(`The request ${this.request.toString()} did not return a single-value result. It returned:\n${JsonResponsePromise.prettifyInfoTable(infoTable)}.`);
+      throw new Error(`The request ${this.request.toString()} did not return a single-value result. It returned:\n${JsonResponsePromise.prettify(infoTable)}.`);
     }
 
     const fieldNames = Object.keys(infoTable.dataShape.fieldDefinitions);
     if (fieldNames.length !== 1) {
-      throw new Error(`The request ${this.request.toString()} did not return a single-value result. It returned:\n${JsonResponsePromise.prettifyInfoTable(infoTable)}.`);
+      throw new Error(`The request ${this.request.toString()} did not return a single-value result. It returned:\n${JsonResponsePromise.prettify(infoTable)}.`);
     }
 
     const [fieldName] = fieldNames;
@@ -119,7 +119,7 @@ export default class JsonResponsePromise {
    * @param {object} infoTable - an infotable-shaped object.
    * @returns {string} - the string prettified version of the infotable.
    */
-  static prettifyInfoTable(infoTable) {
+  static prettify(infoTable) {
     return JSON.stringify(infoTable, undefined, 2);
   }
 
