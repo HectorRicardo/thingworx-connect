@@ -92,7 +92,7 @@ export default class JsonResponsePromise {
 
   /* Implement catch promise method */
   catch(failureCallback) {
-    return this.promise.catch(failureCallback);
+    return this.defaultValue().catch(failureCallback);
   }
 
   /* Implement finally promise method */
