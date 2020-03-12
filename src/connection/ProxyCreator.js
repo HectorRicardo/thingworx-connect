@@ -37,23 +37,53 @@
  */
 export default class ProxyCreator {
   /**
-   * Creates proxies of all entity collections for a connection instance.
+   * Creates a proxy that will be used to access the collections of a server (wrapped in the
+   * connection parameter).
    *
    * @param {Connection} connection - The connectionection instance for which to build the proxies.
    * @returns {object} a frozen object containing all proxies.
    */
-  static createEntityCollectionProxies(connection) {
+  static createImmutableEntityCollectionProxies(connection) {
+    const proxyHandler = {
+      get(collectionsToProxiesMap, property) {
+        const collection = connection.server.getEntityCollection(property);
+        if (!collectionsToProxiesMap.has(collection)) {
+          const collectionProxy = ProxyCreator.createCollectionProxy(collection, connection);
+          collectionsToProxiesMap.set(collection, collectionProxy);
+        }
+        return collectionsToProxiesMap.get(collection);
+      },
+    };
+    const collectionsToProxiesMap = new Map();
+    return Object.freeze(new Proxy(collectionsToProxiesMap, proxyHandler));
+  }
+
+  /**
+   * Creates a proxy that will be used to access the collections of a server (wrapped in the
+   * connection parameter).
+   * The proxy has the changeAuthParams method that is used to change the authentication parameters
+   * of its underlying connection.
+   *
+   * @param {Connection} connection - The connectionection instance for which to build the proxies.
+   * @returns {object} a frozen object containing all proxies.
+   */
+  static createMutableEntityCollectionProxies(connection) {
     const changeAuthParams = connection.setAuthParams.bind(connection);
     const proxyHandler = {
-      get(server, property) {
+      get(collectionsToProxiesMap, property) {
         if (property === 'changeAuthParams') {
           return changeAuthParams;
         }
-        const collection = server.getEntityCollection(property);
-        return ProxyCreator.createCollectionProxy(collection, connection);
+        const collection = connection.server.getEntityCollection(property);
+        if (!collectionsToProxiesMap.has(collection)) {
+          const collectionProxy = ProxyCreator.createCollectionProxy(collection, connection);
+          collectionsToProxiesMap.set(collection, collectionProxy);
+        }
+        return collectionsToProxiesMap.get(collection);
       },
     };
-    return Object.freeze(new Proxy(connection.server, proxyHandler));
+    const collectionsToProxiesMap = new Map();
+    return Object.freeze(new Proxy(collectionsToProxiesMap, proxyHandler));
   }
 
   /**

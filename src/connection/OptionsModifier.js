@@ -1,12 +1,4 @@
-/**
- * Checks if an object has no properties.
- *
- * @param {object} obj - the object to check.
- * @returns {boolean} true if the object is empty, false otherwise.
- */
-function isObjectEmpty(obj) {
-  return Object.entries(obj).length === 0 && obj.constructor === Object;
-}
+import Utils from '../utilities';
 
 /**
  * The request options modifier will modify the request options before sending out the request
@@ -67,7 +59,7 @@ export default class OptionsModifier {
    * include the authentication parameters given
    */
   static getModifier(authParams) {
-    if (authParams == null || isObjectEmpty(authParams)) {
+    if (authParams == null || Utils.isObjectEmpty(authParams)) {
       return OptionsModifier.addCredentialsToOptions;
     }
 

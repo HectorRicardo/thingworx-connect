@@ -23,6 +23,8 @@ module.exports = {
         'Thingworx',
         'Server',
         'Connection',
+        'ImmutableCollection',
+        'MutableCollection',
         'ProxyCreator',
         'EntityCollection',
         'Entity',
@@ -39,6 +41,7 @@ module.exports = {
         'PropertySetResponse',
         'ServiceExecutionPromise',
         'JsonResponsePromise',
+        'Utilities'
       ]
     }]
   },

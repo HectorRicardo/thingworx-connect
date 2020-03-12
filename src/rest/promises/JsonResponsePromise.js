@@ -1,25 +1,5 @@
 import ThingworxResponse from '../responses/ThingworxResponse';
-
-/**
- * Checks if a property is in an object
- *
- * @param {object} object - the object.
- * @param {*} property - the property to look for in the object.
- * @returns {boolean} - true if the property is in the object, false otherwise.
- */
-function hasProp(object, property) {
-  return Object.prototype.hasOwnProperty.call(object, property);
-}
-
-/**
- * Checks whether a value is an object.
- *
- * @param {*} value - the value to be checked.
- * @returns {boolean} - whether the value is an object.
- */
-function isObject(value) {
-  return typeof value === 'object' && value !== null;
-}
+import Utils from '../../utilities';
 
 /**
  * Wrapper for a promise that represents a Thingworx response whose body contains JSON.
@@ -107,10 +87,10 @@ export default class JsonResponsePromise {
    * @returns {boolean} true if value is infotable, false otherwise.
    */
   static isInfoTable(value) {
-    return isObject(value)
+    return Utils.isObject(value)
           && Array.isArray(value.rows)
-          && isObject(value.dataShape)
-          && isObject(value.dataShape.fieldDefinitions);
+          && Utils.isObject(value.dataShape)
+          && Utils.isObject(value.dataShape.fieldDefinitions);
   }
 
   /**
@@ -172,12 +152,12 @@ export default class JsonResponsePromise {
 
     infoTable.rows.forEach((row) => {
       dateTimeFields.forEach((dateTimeField) => {
-        if (hasProp(row, dateTimeField) && row[dateTimeField] !== null) {
+        if (Utils.hasProp(row, dateTimeField) && row[dateTimeField] !== null) {
           row[dateTimeField] = new Date(row[dateTimeField]);
         }
       });
       infoTableFields.forEach((infoTableField) => {
-        if (hasProp(row, infoTableField) && row[infoTableField] !== null) {
+        if (Utils.hasProp(row, infoTableField) && row[infoTableField] !== null) {
           row[infoTableField] = JsonResponsePromise.parseInfoTable(row[infoTableField]);
         }
       });

@@ -1,9 +1,7 @@
-import Server from './Server';
-import ProxyCreator from './ProxyCreator';
-import OptionsModifier from './OptionsModifier';
+import Utils from '../utilities';
 
-const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
-const fetch = isNode ? require('node-fetch') : window.fetch;
+// Cross compatibility with browser and Node.
+const fetch = Utils.isNode ? require('node-fetch') : window.fetch.bind(window);
 
 /**
  * Class used to create a connection to a particular Thingworx server.
@@ -15,21 +13,15 @@ export default class Connection {
   /**
    * Creates a new connection to a particular Thingworx server.
    *
-   * @param {string|Server} server - the Thingworx server for which to create a connection.
-   * @param {object} authParams - the authentication parameters used to authenticate to the
-   * Thingworx server. See the documentation of Thingworx.collections() or Thingworx.connect() for
-   * details of these parameters.
+   * @param {Server} server - the Thingworx server for which to create a connection.
+   * @param {object} modifyOptions - the options modifier of the connection. This is a callback
+   * that when called with a request options object as parameter, modfies that options object so
+   * that it contains the authentication parameters.
    */
-  constructor(server, authParams) {
-    if (typeof server === 'string') {
-      this.server = Server.getServer(server);
-    } else if (server.constructor.name === 'Server') {
-      this.server = server;
-    } else {
-      throw new Error('Server parameter should be either a string or an instance of the Server class.');
-    }
-    this.modifyOptions = OptionsModifier.getModifier(authParams);
-    this.collectionProxies = ProxyCreator.createEntityCollectionProxies(this);
+  constructor(server, modifyOptions) {
+    this.server = server;
+    this.modifyOptions = modifyOptions;
+    this.collectionProxies = this.createEntityCollectionProxies(this);
   }
 
   /**
@@ -46,16 +38,5 @@ export default class Connection {
     }
     this.modifyOptions(request.options);
     return fetch(request.url, request.options);
-  }
-
-  /**
-   * Sets new authentication parameters with which to make requests.
-   *
-   * @param {object} authParams - the new authentication parameters used to communicate to the
-   * Thingworx server. See the documentation of Thingworx.collections() or Thingworx.connect() for
-   * details of these parameters.
-   */
-  setAuthParams(authParams) {
-    this.modifyOptions = OptionsModifier.getModifier(authParams);
   }
 }

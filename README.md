@@ -22,7 +22,7 @@ I recommend using this one: [cors-proxy](https://github.com/HectorRicardo/cors-p
 
 ## Usage
 
-Either import the library using an ES6 import (for web bundlers such as Webpack and Rollup.js):
+Either import the library using an ES6 import (for browsers and web bundlers such as Webpack and Rollup.js):
 
 ```javascript
 import Thingworx from 'thingworx-connect';
@@ -77,7 +77,7 @@ async function sample() {
   });
 }
 ```
-When calling `.collections('server_url')`, the browser will ask for your credentials when you make the first request.
+When calling `.collections()`, the browser will ask for your credentials when you make the first request.
 
 You can also pass in the app key:
 
@@ -95,14 +95,31 @@ const { Things } = Thingworx.collections('https://localhost:8080', {
 });
 ```
 
-You can also change the authentication parameters later on. Given this:
+You can guarantee that two calls to the `.collections()` method with the same parameters (server url and authentication paramaters) will return the same object. That is,
 
 ```javascript
-const collections = Thingworx.collections(thingworxProxyUrl, {
+const collections1 = Thingworx.collections('localhost:8080');
+const collections2 = Thingworx.collections('localhost:8080');
+console.log(collections1 === collections2); // Will output 'true'
+
+const collections3 = Thingworx.collections('localhost', { username: 'myUser', password: 'myPassword' });
+const collections4 = Thingworx.collections('localhost', { username: 'myUser', password: 'myPassword' });
+console.log(collections3 === collections4); // Will also output 'true' 
+```
+
+Every time you call the `.collections()`, the library checks if there has been a call to the method wih the same parameters before, and if so, returns the cached result.
+
+There is also another flavor of the `.collections()` method, namely the `.mutableCollections()` method.
+The advantage is that with this flavor, you can change the authentication parameters later on. 
+
+For example, given this:
+
+```javascript
+const mutableCollections = Thingworx.mutableCollections(thingworxProxyUrl, {
     username: 'myself',
     password: 'myCurrentPassword',
   });
-const { Resources, Users, Things } = collections;
+const { Resources, Users, Things } = mutableCollections;
 ```
 We can do this:
 
@@ -113,7 +130,7 @@ async function changeUserOnRuntime() {
   console.log(currentUsername);
 
   // This will print 'otherUser'
-  collections.changeAuthMethod({
+  mutableCollections.changeAuthMethod({
     username: 'otherUser',
     password: 'otherPassword',
   });
@@ -136,7 +153,7 @@ async function changePasswordOnRuntime() {
   await Things['MyThing'].MyService(); 
 
   // However this will perfectly work
-  collections.changeAuthMethod({
+  mutableCollections.changeAuthMethod({
     username: 'myself',
     password: 'myNewPassword',
   });
@@ -144,11 +161,23 @@ async function changePasswordOnRuntime() {
 }
 ```
 
+The disadvantage of using `.mutableCollections()` is that every time you call the method, a new set of collections is created (in contrast to the `.collections()` method). That is,
+
+```javascript
+const collections1 = Thingworx.mutableCollections('localhost:8080');
+const collections2 = Thingworx.mutableCollections('localhost:8080');
+console.log(collections1 === collections2); // Will output 'false'
+
+const collections3 = Thingworx.mutableCollections('localhost', { username: 'myUser', password: 'myPassword' });
+const collections4 = Thingworx.mutableCollections('localhost', { username: 'myUser', password: 'myPassword' });
+console.log(collections3 === collections4); // Will also output 'false' 
+```
+
 ### Important information for Node users
 
 The usage instructions for Node are the same as the browser usage instructions, except for one thing:
-Since Node does not support cookies or credentials (because it is backend), you need to pass either the
-appKey or the username and password to the `.collections()` method:
+Since Node does not support cookies or credentials (because it is backend), you forcefully need to pass either the
+appKey or the username and password to the `.collections()` and `.mutableCollections()` method:
 
 ```javascript
 const { Things } = Thingworx.collections('http://localhost:8080', {
@@ -158,10 +187,8 @@ const { Things } = Thingworx.collections('http://localhost:8080', {
 or
 
 ```javascript
-const { Things } = Thingworx.collections('https://localhost:8080', {
+const { Things } = Thingworx.mutableCollections('https://localhost:8080', {
   username: 'myUserName',
   password: 'MyPassw0rd!'
 });
 ```
-
-
