@@ -1,7 +1,7 @@
 {
   "name": "thingworx-connect",
   "version": "1.0.4",
-  "description": "A library used to make REST API calls to Thingworx from browser-side JavaScript in a Thingworx-ish way.",
+  "description": "A library used to make REST API calls to Thingworx from Node and frontend JavaScript in a Thingworx-ish way.",
   "main": "dist/thingworx-connect.cjs.js",
   "module": "dist/thingworx-connect.esm.js",
   "browser": "dist/thingworx-connect.umd.js",
@@ -23,6 +23,9 @@
   },
   "author": "Hector Mendez",
   "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  },
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",

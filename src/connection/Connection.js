@@ -2,6 +2,9 @@ import Server from './Server';
 import ProxyCreator from './ProxyCreator';
 import OptionsModifier from './OptionsModifier';
 
+const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+const fetch = isNode ? require('node-fetch') : window.fetch;
+
 /**
  * Class used to create a connection to a particular Thingworx server.
  * A connection is defined by a Server and authentication parameters to that server.

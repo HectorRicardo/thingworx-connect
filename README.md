@@ -1,5 +1,5 @@
 # thingworx-connect
-A library used to make REST API calls to Thingworx from browser-side JavaScript in a Thingworx-ish way.
+A library used to make REST API calls to Thingworx from Node and frontend JavaScript in a Thingworx-ish way.
 You can call entities' services and get and set their properties.
 
 ## Installation
@@ -9,12 +9,12 @@ Install it through npm:
 npm i thingworx-connect
 ```
 
-Or download one of the stand-alone flavors
+Or download one of the stand-alone flavors (for frontend usage):
 
 - Uncompressed, development version: [thingworx-connect.umd.js](https://unpkg.com/thingworx-connect/dist/thingworx-connect.umd.js)
 - Minified, production version: [thingworx-connect.umd.min.js](https://unpkg.com/thingworx-connect/dist/thingworx-connect.umd.min.js)
 
-## Before Using
+## Important note for browser users
 
 If applicable, please make sure that you enable CORS on the Thingworx server(s) you plan to make requests to.
 If you don't have admin access to the server, or don't know what I am talking about, you can always use a CORS proxy.
@@ -22,17 +22,25 @@ I recommend using this one: [cors-proxy](https://github.com/HectorRicardo/cors-p
 
 ## Usage
 
-Either import the library using an ES6 import:
+Either import the library using an ES6 import (for web bundlers such as Webpack and Rollup.js):
 
 ```javascript
 import Thingworx from 'thingworx-connect';
 ```
 
-Or include it with a `<script>` tag:
+Or using a CommonJS import (Node):
+
+```javascript
+const Thingworx = require('thingworx-connect');
+```
+
+Or include it with a `<script>` tag (for browser usage):
 
 ```html
 <script src="thingworx-connect.umd.min.js"></script>
 ```
+
+### Browser usage
 
 You can start making REST API calls to Thingworx right away! Simply pass in your server url to the `.collections()` method of the `Thingworx` object.
 If your server url's protocol is `http`, you can omit it. Similarly, if the port is `80`, you can also omit it.
@@ -69,7 +77,7 @@ async function sample() {
   });
 }
 ```
-When calling `.collections()` without arguments, the browser will ask for your credentials when you make the first request.
+When calling `.collections('server_url')`, the browser will ask for your credentials when you make the first request.
 
 You can also pass in the app key:
 
@@ -135,3 +143,25 @@ async function changePasswordOnRuntime() {
   await Things['MyThing'].MyService();  // success!
 }
 ```
+
+### Important information for Node users
+
+The usage instructions for Node are the same as the browser usage instructions, except for one thing:
+Since Node does not support cookies or credentials (because it is backend), you need to pass either the
+appKey or the username and password to the `.collections()` method:
+
+```javascript
+const { Things } = Thingworx.collections('http://localhost:8080', {
+  appKey: '896548f2-eaab-46a4-b129-53f1531557a4'
+});
+```
+or
+
+```javascript
+const { Things } = Thingworx.collections('https://localhost:8080', {
+  username: 'myUserName',
+  password: 'MyPassw0rd!'
+});
+```
+
+
