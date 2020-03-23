@@ -66,6 +66,10 @@ async function sample() {
   // just as Thingworx infotables.
   const infoTable = await ThingTemplates['GenericThing'].GetImplementingThings().infoTable();
 
+  // This will return only the rows of the resulting infotable, droping down the datashape.
+  // If any of the infotable fields is also an infotable, that nested infotable will also have its datashape dropped.
+  const infoTableRows = await Things['MyThing'].GetTreeLikeOrg().rows();
+
   // This will return a json.
   const json = await Things['Utilities'].GetMetadataAsJSON().json();
 

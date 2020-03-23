@@ -149,7 +149,7 @@ export default class ProxyCreator {
   static createPropertyOrServiceProxy(propertyOrServiceName, entity, connection) {
     const proxyHandler = {
       // This applies if propertyOrService is a property and executes when calling .then(),
-      // .val(), .json(), .infoTable(), or .set() methods. Any other method results in an error.
+      // .json(), .infoTable(), or .set() methods. Any other method results in an error.
       get(_, methodName) {
         switch (methodName) {
           case 'then':

@@ -6,6 +6,34 @@ import ThingworxResponse from '../responses/ThingworxResponse';
  */
 export default class ServiceExecutionPromise extends JsonResponsePromise {
   /**
+   * Extracts the single value of the service call's response body.
+   * ThingWorx REST API service calls always return json objects or infotable-shaped jsons, even
+   * when the result is a single value. This method gets the single value we're interested in from
+   * the response.
+   *
+   * @returns {Promise} a promise resolving to the single value we're interested in
+   * @throws {Error} an error if the request was unsuccessful or the response is not a single-value
+   * result, e.g., the infotable returned contains multiple columns or multiple rows, or the json
+   * does not have the shape of an infotable.
+   */
+  async val() {
+    const infoTable = await this.json();
+    if (!JsonResponsePromise.isInfoTable(infoTable) || infoTable.rows.length !== 1) {
+      throw new Error(`The request ${this.request.toString()} did not return a single-value result. It returned:\n${JsonResponsePromise.prettify(infoTable)}.`);
+    }
+
+    const fieldNames = Object.keys(infoTable.dataShape.fieldDefinitions);
+    if (fieldNames.length !== 1) {
+      throw new Error(`The request ${this.request.toString()} did not return a single-value result. It returned:\n${JsonResponsePromise.prettify(infoTable)}.`);
+    }
+
+    const [fieldName] = fieldNames;
+    const result = infoTable.rows[0][fieldName];
+    const { baseType } = infoTable.dataShape.fieldDefinitions[fieldName];
+    return JsonResponsePromise.parseValue(result, baseType);
+  }
+
+  /**
    * Converts the response's json body to an infotable.
    *
    * @returns {Promise} a promise resolving to the infotable of the response body.
@@ -20,28 +48,6 @@ export default class ServiceExecutionPromise extends JsonResponsePromise {
   }
 
   /**
-   * Converts the response's json body to an infotable.
-   * An alias for .infoTable()
-   *
-   * @returns {Promise} a promise resolving to the infotable of the response body.
-   * @throws {Error} if the request was not successful or if the response is not an infotable.
-   */
-  async it() {
-    return this.infoTable();
-  }
-
-  /**
-   * Converts the response's json body to an infotable.
-   * An alias for .infoTable()
-   *
-   * @returns {Promise} a promise resolving to the infotable of the response body.
-   * @throws {Error} if the request was not successful or if the response is not an infotable.
-   */
-  async infotable() {
-    return this.infoTable();
-  }
-
-  /**
    * Converts the response's json body to an infotable and returns its rows.
    *
    * @returns {Promise} a promise resolving to the rows of the infotable of the response body.
@@ -49,7 +55,7 @@ export default class ServiceExecutionPromise extends JsonResponsePromise {
    */
   async rows() {
     const infoTable = await this.infoTable();
-    return infoTable.rows;
+    return JsonResponsePromise.getInfoTableRows(infoTable);
   }
 
   /**

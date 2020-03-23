@@ -18,34 +18,6 @@ export default class JsonResponsePromise {
   }
 
   /**
-   * Extracts the single value of the response body.
-   * ThingWorx REST API calls always return json objects or infotable-shaped jsons, even when the
-   * result is a single value. This method gets the single value we're interested in from the
-   * response.
-   *
-   * @returns {Promise} a promise resolving to the single value we're interested in
-   * @throws {Error} an error if the request was unsuccessful or the response is not a single-value
-   * result, e.g., the infotable returned contains multiple columns or multiple rows, or the json
-   * does not have the shape of an infotable.
-   */
-  async val() {
-    const infoTable = await this.json();
-    if (!JsonResponsePromise.isInfoTable(infoTable) || infoTable.rows.length !== 1) {
-      throw new Error(`The request ${this.request.toString()} did not return a single-value result. It returned:\n${JsonResponsePromise.prettify(infoTable)}.`);
-    }
-
-    const fieldNames = Object.keys(infoTable.dataShape.fieldDefinitions);
-    if (fieldNames.length !== 1) {
-      throw new Error(`The request ${this.request.toString()} did not return a single-value result. It returned:\n${JsonResponsePromise.prettify(infoTable)}.`);
-    }
-
-    const [fieldName] = fieldNames;
-    const result = infoTable.rows[0][fieldName];
-    const { baseType } = infoTable.dataShape.fieldDefinitions[fieldName];
-    return JsonResponsePromise.parseValue(result, baseType);
-  }
-
-  /**
    * Parses the response's json body of the fetch request.
    *
    * @returns {Promise} a promise resolving to the object resulting from the json parsing.
@@ -164,5 +136,27 @@ export default class JsonResponsePromise {
     });
 
     return infoTable;
+  }
+
+  /**
+   * Retrieves the rows of the infotable, dropping its datashape.
+   * If one of its fields is also an infotable, recursively does the same operation on that field.
+   *
+   * @param {object} infoTable - the infotable for which to obtain its rows.
+   * @returns {Array} - the rows of the infotable.
+   */
+  static getInfoTableRows(infoTable) {
+    const { rows } = infoTable;
+    const { fieldDefinitions } = infoTable.dataShape;
+    Object.entries(fieldDefinitions)
+      .filter(([, fieldDefinition]) => fieldDefinition.baseType === 'INFOTABLE')
+      .forEach(([fieldName]) => {
+        rows.forEach((row) => {
+          if (Utils.hasProp(row, fieldName) && row[fieldName] !== null) {
+            row[fieldName] = JsonResponsePromise.getInfoTableRows(row[fieldName]);
+          }
+        });
+      });
+    return rows;
   }
 }
