@@ -12,6 +12,7 @@ export default class ThingworxResponse {
     this.response = response;
     this.request = request;
     this.ok = response.ok; // for easy access, instead of having to do .response.ok from the outside
+    this.status = response.status; // for easy access again
     this.serverURL = request.server.origin;
   }
 
