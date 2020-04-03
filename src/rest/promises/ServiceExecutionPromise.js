@@ -83,6 +83,6 @@ export default class ServiceExecutionPromise extends JsonResponsePromise {
    * @returns {Error} - an Error object that is ready to be thrown.
    */
   async buildError(response) {
-    return new Error(`Status code ${response.status}: Error calling ${this.request.toString()}\nFrom ${response.serverURL}\n${await response.text()}`);
+    return new Error(`Received status code ${response.status} from ${response.serverURL} - ${await response.text()}\nError happened while calling ${this.request.toString()}\n`);
   }
 }
